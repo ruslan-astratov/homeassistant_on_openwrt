@@ -82,22 +82,16 @@ LUMI_GATEWAY=$(is_lumi_gateway)
 GTW360_GATEWAY=$(is_gtw360)
 NEED_ZHA="$LUMI_GATEWAY$GTW360_GATEWAY"
 
-echo "Устанавливаем openssl"
-
-# Install local openssl
-# wget https://www.openssl.org/source/openssl-1.1.1g.tar.gz
-wget https://www.openssl.org/source/openssl-1.1.1g.tar.gz
-tar -xvzf openssl-1.1.1g.tar.gz
-cd openssl-1.1.1g && ./config --prefix=/root/openssl --openssldir=/root/openssl no-ssl2 && make && make install
-echo "Установили openssl"
+echo "Install OpenSSL"
+# Install OpenSSL
+opkg install openssl-util
+opkg install libopenssl
 
 # Install them first to check Openlumi feed id added
 opkg install \
   python3-base \
   python3-pynacl \
   python3-ciso8601
-
-
 
 opkg install \
   patch \
@@ -177,20 +171,6 @@ rm -rf /etc/homeassistant/deps/
 find /usr/lib/python${PYTHON_VERSION}/site-packages/ | grep -E "/__pycache__$" | xargs rm -rf
 rm -rf /usr/lib/python${PYTHON_VERSION}/site-packages/botocore/data
 find /usr/lib/python${PYTHON_VERSION}/site-packages/numpy -iname tests -print0 | xargs -0 rm -rf
-
-# HUYNA KAKAYATO
-ENV LD_LIBRARY_PATH="/root/openssl/lib:/usr/local/lib64:/usr/local/lib"
-ENV LDFLAGS="-L/root/openssl/lib -L/usr/local/lib -L/usr/local/lib64 -Wl,-rpath,/root/openssl/lib -Wl,-rpath,/usr/local/lib -Wl,-rpath,/usr/local/lib64"
-ENV CPPFLAGS="-I/usr/local/include"
-RUN ./configure --enable-optimizations --with-openssl=/root/openssl
-# RUN ./configure --enable-optimizations
-RUN make altinstall
-RUN rm -f /opt/Python-${PYTHON_VERSION}.tgz
-RUN rm /usr/bin/python3 || true
-RUN ln -s /opt/Python-${PYTHON_VERSION}/python /usr/bin/python3
-RUN rm /usr/bin/pip3 || true
-RUN ln -s /usr/local/bin/pip${PYTHON_SHORT_VERSION} /usr/bin/pip3
-WORKDIR /
 
 echo "Install base requirements from PyPI..."
 pip3 install --no-cache-dir wheel
