@@ -82,11 +82,14 @@ LUMI_GATEWAY=$(is_lumi_gateway)
 GTW360_GATEWAY=$(is_gtw360)
 NEED_ZHA="$LUMI_GATEWAY$GTW360_GATEWAY"
 
+echo "Устанавливаем openssl"
+
 # Install local openssl
 # wget https://www.openssl.org/source/openssl-1.1.1g.tar.gz
-RUN wget https://www.openssl.org/source/openssl-1.1.1g.tar.gz
-RUN tar -xvzf openssl-1.1.1g.tar.gz
-RUN cd openssl-1.1.1g && ./config --prefix=/root/openssl --openssldir=/root/openssl no-ssl2 && make && make install
+wget https://www.openssl.org/source/openssl-1.1.1g.tar.gz
+tar -xvzf openssl-1.1.1g.tar.gz
+cd openssl-1.1.1g && ./config --prefix=/root/openssl --openssldir=/root/openssl no-ssl2 && make && make install
+echo "Установили openssl"
 
 # Install them first to check Openlumi feed id added
 opkg install \
